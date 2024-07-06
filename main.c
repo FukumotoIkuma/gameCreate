@@ -80,6 +80,8 @@ Boss boss;
 int main(int argc, char* argv[]) {
     srand(time(NULL));
 
+    //エラーのハンドリング
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Failed to initialize SDL! SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -108,6 +110,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    //処理開始
+    
+    //初期化
     Player player;
     initPlayer(&player, renderer);
 
@@ -141,11 +146,16 @@ int main(int argc, char* argv[]) {
     startTime = SDL_GetTicks();
 
     initBoss(&boss, renderer, "boss.png", 100);
-
+    
+    
+    //メインループ
     while (!quit) {
+        //入力の処理
         while (SDL_PollEvent(&event)) {
+
             if (event.type == SDL_QUIT) {
                 quit = 1;
+
             } else if (event.type == SDL_MOUSEBUTTONDOWN) {
                 int mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
@@ -196,6 +206,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        //各情報の更新
         updatePlayer(&player, 1.0f / 60);
         updateBackground(&bg, 1.0f / 60);
 
@@ -209,11 +220,11 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        //ボスの出現
         Uint32 currentTime = SDL_GetTicks();
         if (!bossAppeared && currentTime - startTime >= BOSS_APPEAR_TIME) {
             bossAppeared = 1;
         }
-
         if (bossAppeared) {
             updateBoss(&boss, 1.0f / 60);
             renderBoss(&boss, renderer);
@@ -228,7 +239,7 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-
+        //描画
         SDL_RenderClear(renderer);
         renderBackground(&bg, renderer);
         renderPlayer(&player, renderer);
@@ -239,6 +250,7 @@ int main(int argc, char* argv[]) {
 
         updateCombatPowerText(renderer, combatPower, font, textColor);
 
+        //上にもこの分岐あったやろ
         if (bossAppeared) {
             renderBoss(&boss, renderer);
             renderBossHealth(renderer); // ボスの体力を表示する
