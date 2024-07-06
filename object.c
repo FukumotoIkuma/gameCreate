@@ -21,7 +21,7 @@ void initObject(Object* object, SDL_Renderer* renderer, const char* imageFile) {
     }
 
     object->width = OBJECT_WIDTH; // オブジェクトの幅
-    object->height = OBJECT_HEIGHt; // オブジェクトの高さ
+    object->height = OBJECT_HEIGHT; // オブジェクトの高さ
 
     object->x = rand() % (531 - 190) + 190;
     object->y = -object->height; // 画面上部から出現する

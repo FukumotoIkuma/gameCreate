@@ -5,3 +5,7 @@ boss.o
 player.o
 object.o
 sdl_window
+chara.data
+system.c
+system.h
+system.o
