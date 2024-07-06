@@ -1,5 +1,3 @@
-// main.c
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -9,12 +7,10 @@
 #include "player.h"
 #include "bg.h"
 #include "object.h"
-#include "boss.h" // 追加
+#include "boss.h" 
+#include "main.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-#define NUM_OBJECTS 2
-#define BOSS_APPEAR_TIME 10000 // ボスが出現する時間（ミリ秒）
+
 
 void updateCombatPowerText(SDL_Renderer* renderer, int combatPower, TTF_Font* font, SDL_Color color) {
     char text[20];
