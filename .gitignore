@@ -1,0 +1,6 @@
+bg.o
+main.o
+bg.o
+boss.o
+player.o
+object.o
