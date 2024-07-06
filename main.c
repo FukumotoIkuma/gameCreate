@@ -113,12 +113,16 @@ int main(int argc, char* argv[]) {
     //処理開始
     
     //初期化
+
+    //プレイヤー
     Player player;
     initPlayer(&player, renderer);
 
+    //背景
     Background bg;
     initBackground(&bg, renderer);
 
+    //オブジェクト
     Object objects[NUM_OBJECTS];
     const char* objectImages[] = {"+10.png", "-10.png"}; // オブジェクトの種類を定義
     for (int i = 0; i < NUM_OBJECTS; ++i) {
@@ -126,6 +130,10 @@ int main(int argc, char* argv[]) {
         initObject(&objects[i], renderer, imageFile);
     }
 
+    //ボス
+    initBoss(&boss, renderer, "boss.png", 100);
+
+    //戦闘力
     TTF_Font* font = TTF_OpenFont("font.ttf", 24);
     if (!font) {
         printf("Failed to load font! TTF_Error: %s\n", TTF_GetError());
@@ -140,12 +148,13 @@ int main(int argc, char* argv[]) {
     SDL_Color textColor = { 255, 255, 255, 255 };
 
     int combatPower = 0;
+
+    //その他
     int quit = 0;
     SDL_Event event;
 
     startTime = SDL_GetTicks();
 
-    initBoss(&boss, renderer, "boss.png", 100);
     
     
     //メインループ
