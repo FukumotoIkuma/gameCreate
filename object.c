@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "player.h"
+#include "main.h"
 
 void initObject(Object* object, SDL_Renderer* renderer, const char* imageFile) {
     SDL_Surface* tempSurface = IMG_Load(imageFile);

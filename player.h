@@ -3,9 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-#define WINDOW_WIDTH 800  // ウィンドウの幅を定義
-#define WINDOW_HEIGHT 600 // ウィンドウの高さを定義
-
 typedef struct {
     int x, y;
     int width, height;

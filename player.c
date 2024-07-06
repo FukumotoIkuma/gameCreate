@@ -3,6 +3,7 @@
 #include "player.h"
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
+#include "main.h"
 
 void initPlayer(Player* player, SDL_Renderer* renderer) {
     player->x = 100;
