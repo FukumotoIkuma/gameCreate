@@ -208,10 +208,21 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        //各情報の更新
-        updatePlayer(&player, 1.0f / 60);
-        updateBackground(&bg, 1.0f / 60);
+        //情報の更新と描画
 
+        //描画.先に記述するほど後ろ側に配置されるの
+        SDL_RenderClear(renderer);
+
+        //背景
+        updateBackground(&bg, 1.0f / 60);
+        renderBackground(&bg, renderer);
+
+        //プレイヤー
+        updatePlayer(&player, 1.0f / 60);
+        renderPlayer(&player, renderer);
+
+
+        //オブジェクト
         for (int i = 0; i < NUM_OBJECTS; ++i) {
             updateObject(&objects[i], 1.0f / 60);
             if (checkCollision(&player, &objects[i])) {
@@ -222,7 +233,14 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        //ボスの出現
+        for (int i = 0; i < NUM_OBJECTS; ++i) {
+            renderObject(&objects[i], renderer);
+        }
+
+        //戦闘力
+        updateCombatPowerText(renderer, combatPower, font, textColor);
+
+        //ボス
         Uint32 currentTime = SDL_GetTicks();
         if (!bossAppeared && currentTime - startTime >= BOSS_APPEAR_TIME) {
             bossAppeared = 1;
@@ -230,7 +248,9 @@ int main(int argc, char* argv[]) {
         if (bossAppeared) {
             updateBoss(&boss, 1.0f / 60);
             renderBoss(&boss, renderer);
+            renderBossHealth(renderer); // ボスの体力を表示する
 
+            //ゲームの動作がこんなこと起きないようになってるが？？？
             if (boss.y >= player.y - boss.height) { // ボスがプレイヤーに到達した場合
                 if (combatPower < boss.power) {
                     printf("Game Over! Player power: %d, Boss power: %d\n", combatPower, boss.power);
@@ -241,22 +261,8 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        //描画
-        SDL_RenderClear(renderer);
-        renderBackground(&bg, renderer);
-        renderPlayer(&player, renderer);
 
-        for (int i = 0; i < NUM_OBJECTS; ++i) {
-            renderObject(&objects[i], renderer);
-        }
 
-        updateCombatPowerText(renderer, combatPower, font, textColor);
-
-        //上にもこの分岐あったやろ
-        if (bossAppeared) {
-            renderBoss(&boss, renderer);
-            renderBossHealth(renderer); // ボスの体力を表示する
-        }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(1000 / 60); // 60 FPS
