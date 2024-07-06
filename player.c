@@ -1,17 +1,17 @@
 // player.c
 
-#include "player.h"
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include "main.h"
+#include "player.h"
 
 void initPlayer(Player* player, SDL_Renderer* renderer) {
     player->x = 100;
-    player->y = WINDOW_HEIGHT - 150; // 画面下部に設定
-    player->width = 100; // サイズを設定
-    player->height = 150; // サイズを設定
+    player->y = WINDOW_HEIGHT - PLAYER_HEIGHT; // 画面下部に設定
+    player->width = PLAYER_WIDTH; 
+    player->height = PLAYER_HEIGHT; 
     player->velocity_x = 0; // 初期速度は0
-    player->max_speed = 300; // 最高速度を設定
+    player->max_speed = PLAYER_MAX_SPEED; // 最高速度を設定
 
     // 画像を読み込み
     SDL_Surface* tempSurface = IMG_Load("player.png");

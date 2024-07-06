@@ -3,6 +3,10 @@
 
 #include <SDL2/SDL.h>
 
+#define PLAYER_WIDTH 100
+#define PLAYER_HEIGHT 150
+#define PLAYER_MAX_SPEED 300
+
 typedef struct {
     int x, y;
     int width, height;
