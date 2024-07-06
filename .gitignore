@@ -4,3 +4,4 @@ bg.o
 boss.o
 player.o
 object.o
+sdl_window
