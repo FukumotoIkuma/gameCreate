@@ -20,13 +20,13 @@ void initObject(Object* object, SDL_Renderer* renderer, const char* imageFile) {
         return;
     }
 
-    object->width = 96; // オブジェクトの幅
-    object->height = 96; // オブジェクトの高さ
+    object->width = OBJECT_WIDTH; // オブジェクトの幅
+    object->height = OBJECT_HEIGHt; // オブジェクトの高さ
 
     object->x = rand() % (531 - 190) + 190;
     object->y = -object->height; // 画面上部から出現する
 
-    object->speed = 200; // 移動速度を設定
+    object->speed = OBJECT_SPEED; // 移動速度を設定
 
 
     if (strcmp(imageFile, "+10.png") == 0) {

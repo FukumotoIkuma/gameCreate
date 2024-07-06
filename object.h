@@ -2,7 +2,11 @@
 #define OBJECT_H
 
 #include <SDL2/SDL.h>
-#include "player.h" // Player型を認識するためにインクルード
+#include "player.h" 
+
+#define OBJECT_WIDTH 96
+#define OBJECT_HEIGHT 96
+#define OBJECT_SPEED 200
 
 typedef enum {
     OBJECT_TYPE_PLUS_10,
