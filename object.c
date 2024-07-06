@@ -28,9 +28,9 @@ void initObject(Object* object, SDL_Renderer* renderer, const char* imageFile) {
     object->speed = 200; // 移動速度を設定
 
     // 画面外に出た場合は必ず +10.png のオブジェクトとして再配置する
-    if (object->y >= WINDOW_HEIGHT) {
-        imageFile = "+10.png";
-    }
+    // if (object->y >= WINDOW_HEIGHT) {
+    //     imageFile = "+10.png";
+    // }
 
     if (strcmp(imageFile, "+10.png") == 0) {
         object->type = OBJECT_TYPE_PLUS_10;
