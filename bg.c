@@ -21,10 +21,11 @@ void initBackground(Background* bg, SDL_Renderer* renderer) {
         return;
     }
 
-    bg->x = (WINDOW_WIDTH - 400) / 2; // ウィンドウ中央に配置
+    bg->x = (WINDOW_WIDTH - BG_WIDTH) / 2; // ウィンドウ中央に配置
     bg->y = -WINDOW_HEIGHT; // スクロールの開始位置
-    bg->width = 400; // 背景の幅
-    bg->height = 1000; // 背景の高さ
+    bg->width = BG_WIDTH;
+    bg->height = BG_HEIGHT;
+
     bg->speed = 100; // スクロール速度を1に変更
 }
 

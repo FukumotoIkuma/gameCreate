@@ -2,7 +2,8 @@
 #define BG_H
 
 #include <SDL2/SDL.h>
-
+#define BG_WIDTH 400
+#define BG_HEIGHT 1000
 typedef struct {
     SDL_Texture* texture;
     int x, y;
