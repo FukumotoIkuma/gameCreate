@@ -163,42 +163,35 @@ int main(int argc, char* argv[]) {
                 for (int i = 0; i < NUM_OBJECTS; ++i) {
                     if (mouseX >= objects[i].x && mouseX <= objects[i].x + objects[i].width &&
                         mouseY >= objects[i].y && mouseY <= objects[i].y + objects[i].height) {
-
-                        if (objects[i].type == OBJECT_TYPE_MINUS_10) { // -10 のオブジェクトがクリックされた場合
-                            const char* newImageFile = "+10.png";
-                            SDL_Surface* newSurface = IMG_Load(newImageFile);
-                            if (!newSurface) {
-                                printf("Failed to load object image: %s\n", IMG_GetError());
+                        
+                        const char* newImageFile;
+                        switch (objects[i].type) {
+                            case OBJECT_TYPE_MINUS_10:
+                                newImageFile = "+10.png";
+                                objects[i].type = OBJECT_TYPE_PLUS_10;
                                 break;
-                            }
-                            SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, newSurface);
-                            SDL_FreeSurface(newSurface);
-                            if (!newTexture) {
-                                printf("Failed to create object texture: %s\n", SDL_GetError());
+                            case OBJECT_TYPE_PLUS_10:
+                                newImageFile = "-10.png";
+                                objects[i].type = OBJECT_TYPE_MINUS_10;
                                 break;
-                            }
-
-                            SDL_DestroyTexture(objects[i].texture);
-                            objects[i].texture = newTexture;
-                            objects[i].type = OBJECT_TYPE_PLUS_10;
-                        } else if (objects[i].type == OBJECT_TYPE_PLUS_10) { // +10 のオブジェクトがクリックされた場合
-                            const char* newImageFile = "-10.png";
-                            SDL_Surface* newSurface = IMG_Load(newImageFile);
-                            if (!newSurface) {
-                                printf("Failed to load object image: %s\n", IMG_GetError());
+                            default:
                                 break;
-                            }
-                            SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, newSurface);
-                            SDL_FreeSurface(newSurface);
-                            if (!newTexture) {
-                                printf("Failed to create object texture: %s\n", SDL_GetError());
-                                break;
-                            }
-
-                            SDL_DestroyTexture(objects[i].texture);
-                            objects[i].texture = newTexture;
-                            objects[i].type = OBJECT_TYPE_MINUS_10;
                         }
+                            
+                        SDL_Surface* newSurface = IMG_Load(newImageFile);
+                        if (!newSurface) {
+                            printf("Failed to load object image: %s\n", IMG_GetError());
+                            break;
+                        }
+                        SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, newSurface);
+                        SDL_FreeSurface(newSurface);
+                        if (!newTexture) {
+                            printf("Failed to create object texture: %s\n", SDL_GetError());
+                            break;
+                        }
+
+                        SDL_DestroyTexture(objects[i].texture);
+                        objects[i].texture = newTexture;
                     }
                 }
             } else if (event.type == SDL_KEYDOWN) {
