@@ -5,7 +5,7 @@ LOADLIBES =
 LDLIBS = -lm -lSDL2 -lSDL2_image -lSDL2_ttf
 
 TARGET = sdl_window
-OBJS = main.o player.o bg.o object.o boss.o  # boss.o を追加
+OBJS = main.o  system.o window.o
 
 # デバッグ用ターゲット
 debug: CPPFLAGS =

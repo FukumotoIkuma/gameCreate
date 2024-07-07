@@ -1,0 +1,5 @@
+#width,height,speed,image_file
+100 150 300 ./img/player.png
+400 1000 100 ./img/map1.png
+500 243 50 ./img/boss.png
+96 96 200 ./img/object_default.png

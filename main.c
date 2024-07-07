@@ -4,78 +4,105 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "player.h"
-#include "bg.h"
-#include "object.h"
-#include "boss.h" 
 #include "main.h"
 
+#include "system.h"
 
+/*キー入力をゲームに反映
+key_eventはdown,upのみ受け付ける*/
+void handleKeyInput(SDL_Event* key_event){
+    if (key_event->type != SDL_KEYDOWN && key_event->type != SDL_KEYUP)
 
-void updateCombatPowerText(SDL_Renderer* renderer, int combatPower, TTF_Font* font, SDL_Color color) {
-    char text[20];
-    snprintf(text, sizeof(text), "power: %d", combatPower);
-    
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, color);
-    if (!textSurface) {
-        printf("Failed to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
         return;
-    }
-    
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_FreeSurface(textSurface);
-    if (!textTexture) {
-        printf("Failed to create text texture! SDL Error: %s\n", SDL_GetError());
-        return;
-    }
 
-    SDL_Rect dstRect = { WINDOW_WIDTH - 200, 10, 190, 30 };
-    SDL_RenderCopy(renderer, textTexture, NULL, &dstRect);
-    SDL_DestroyTexture(textTexture);
+    //downならTrue,upならfalse
+    SDL_bool is_key_down  = key_event->type == SDL_KEYDOWN;
+    
+    switch (key_event->key.keysym.sym) {
+            case SDLK_LEFT:
+                Game.input.left = is_key_down;
+                break;
+            case SDLK_RIGHT:
+                Game.input.right = is_key_down;
+                break;
+            case SDLK_LSHIFT:
+                Game.input.l_shift = is_key_down;
+            case SDLK_RSHIFT:
+                Game.input.r_shift = is_key_down;
+        }
+
+    
 }
 
-void renderBossHealth(SDL_Renderer* renderer) {
-    SDL_Color textColor = { 255, 0, 0, 255 }; // 赤色のテキスト
-    char healthText[50];
-    snprintf(healthText, sizeof(healthText), "Boss Health: %d", bossHealth);
+/*
+キャラ情報の更新
+移動や状態に依存した処理など
+*/
+void updateChara(){
+    for (int i=0;i<NumGameChara;++i){
+        switch (gameChara[i].type)
+        {
+        case CT_Player:
+            int dir = (Game.input.right-Game.input.left);//intにキャストしないと元々boolだからバグる
+            float diff = dir*gameChara[i].max_speed * Game.timeStep;
+            if (Game.input.l_shift || Game.input.r_shift)
+                diff *= 1/3;
+            gameChara[i].point.x += diff;
 
-    TTF_Font* font = TTF_OpenFont("font.ttf", 18);
-    if (!font) {
-        printf("Failed to load font! TTF_Error: %s\n", TTF_GetError());
-        return;
+            // マップの範囲を超えないように制限する
+            if (gameChara[i].point.x<200) 
+                gameChara[i].point.x = 200;
+            if (gameChara[i].point.x>600-gameChara[i].entity->w) 
+                gameChara[i].point.x = 600-gameChara[i].entity->w;//マジックナンバー
+            
+            
+
+            break;
+        case CT_Ball:
+            gameChara[i].point.y += gameChara[i].entity->speed*Game.timeStep;
+
+            //画面下部を超えたら上に再出現
+            if (gameChara[i].point.y>=WINDOW_HEIGHT){
+                gameChara[i].point.x = rand() % (531 - 190) + 190;//マジックナンバー
+                gameChara[i].point.y = -gameChara[i].entity->h; // 画面上部から再出現する  
+            }
+            break;
+        case CT_Boss:
+            //一定時間経過でボスが出現
+            if (gameChara[i].stts == CS_Disable){
+                continue;//一旦強制退場
+                Uint32 currentTime = SDL_GetTicks();
+                if (currentTime - Game.startTime >= BOSS_APPEAR_TIME) 
+                        gameChara[i].stts = CS_Normal;
+                else
+                    continue;//これ以上処理は必要ない
+                }
+            //ボスの移動
+            gameChara[i].point.y += gameChara[i].entity->speed*Game.timeStep;
+            break;
+        case CT_BackGround:
+            gameChara[i].point.y += gameChara[i].entity->speed * Game.timeStep;
+            // 背景がウィンドウの下端に達したら再スタート
+            if (gameChara[i].point.y >= 0)
+                gameChara[i].point.y = -gameChara[i].entity->h;
+            break;
+
+        default:
+            break;
+        }
     }
 
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, healthText, textColor);
-    if (!textSurface) {
-        printf("Failed to render text surface! SDL_Error: %s\n", SDL_GetError());
-        TTF_CloseFont(font);
-        return;
-    }
-
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    if (!textTexture) {
-        printf("Failed to create text texture! SDL_Error: %s\n", SDL_GetError());
-        SDL_FreeSurface(textSurface);
-        TTF_CloseFont(font);
-        return;
-    }
-
-    SDL_Rect textRect = { 10, 10, textSurface->w, textSurface->h };
-    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-
-    SDL_FreeSurface(textSurface);
-    SDL_DestroyTexture(textTexture);
-    TTF_CloseFont(font);
 }
 
-// グローバル変数
-Uint32 startTime;
-int bossAppeared = 0;
-Boss boss;
+/*他でチェックしきれないゲームステータスの変化を追跡する*/
+void updateGameInfo(){
+    return;
+}
+
+
+
 
 int main(int argc, char* argv[]) {
-    srand(time(NULL));
-
     //エラーのハンドリング
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -93,180 +120,73 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Failed to create window! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Failed to create renderer! SDL_Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        return 1;
-    }
-
     //処理開始
     
     //初期化
-
-    //プレイヤー
-    Player player;
-    initPlayer(&player, renderer);
-
-    //背景
-    Background bg;
-    initBackground(&bg, renderer);
-
-    //オブジェクト
-    Object objects[NUM_OBJECTS];
-    const char* objectImages[] = {"+10.png", "-10.png"}; // オブジェクトの種類を定義
-    for (int i = 0; i < NUM_OBJECTS; ++i) {
-        const char* imageFile = objectImages[rand() % 2]; // ランダムにオブジェクトの種類を選択
-        initObject(&objects[i], renderer, imageFile);
-    }
-
-    //ボス
-    initBoss(&boss, renderer, "boss.png", 100);
-
-    //戦闘力
-    TTF_Font* font = TTF_OpenFont("font.ttf", 24);
-    if (!font) {
-        printf("Failed to load font! TTF_Error: %s\n", TTF_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Color textColor = { 255, 255, 255, 255 };
-
-    int combatPower = 0;
+    
+    if (0>InitSystem("./data/chara.data", "./data/ball.data")) return PrintError("failed to init system");
+        
+    
+    
+    if (0>InitWindow()) return PrintError("failed to init window");
 
     //その他
-    int quit = 0;
+    
     SDL_Event event;
-
-    startTime = SDL_GetTicks();
-
     
     
     //メインループ
-    while (!quit) {
+    Game.stts = GS_Playing;
+    while (Game.stts) {
         //入力の処理
         while (SDL_PollEvent(&event)) {
-
             if (event.type == SDL_QUIT) {
-                quit = 1;
+                Game.stts = GS_End;
 
             } else if (event.type == SDL_MOUSEBUTTONDOWN) {
                 int mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
 
-                for (int i = 0; i < NUM_OBJECTS; ++i) {
-                    if (mouseX >= objects[i].x && mouseX <= objects[i].x + objects[i].width &&
-                        mouseY >= objects[i].y && mouseY <= objects[i].y + objects[i].height) {
-                        
-                        const char* newImageFile;
-                        switch (objects[i].type) {
-                            case OBJECT_TYPE_MINUS_10:
-                                newImageFile = "+10.png";
-                                objects[i].type = OBJECT_TYPE_PLUS_10;
-                                break;
-                            case OBJECT_TYPE_PLUS_10:
-                                newImageFile = "-10.png";
-                                objects[i].type = OBJECT_TYPE_MINUS_10;
-                                break;
-                            default:
-                                break;
-                        }
-                            
-                        SDL_Surface* newSurface = IMG_Load(newImageFile);
-                        if (!newSurface) {
-                            printf("Failed to load object image: %s\n", IMG_GetError());
-                            break;
-                        }
-                        SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, newSurface);
-                        SDL_FreeSurface(newSurface);
-                        if (!newTexture) {
-                            printf("Failed to create object texture: %s\n", SDL_GetError());
-                            break;
-                        }
-
-                        SDL_DestroyTexture(objects[i].texture);
-                        objects[i].texture = newTexture;
+                for (int i = 0; i < NumGameChara; ++i) {
+                    //クリックが関係していれば処理開始
+                    if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x &&
+                        gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y))
+                        goto NEXTLOOP;
+                    switch (gameChara[i].oType)
+                    {
+                    case OS_PLUS10:
+                        gameChara[i].oType = OS_MINUS10;
+                        break;
+                    case OS_MINUS10:
+                        gameChara[i].type = OS_PLUS10;
+                        break;
+                    
+                    default:
+                        break;
                     }
                 }
-            } else if (event.type == SDL_KEYDOWN) {
-                handlePlayerEvent(&player, &event);
+            } else if (event.type == SDL_KEYDOWN|| event.type == SDL_KEYUP) {
+                handleKeyInput(&event);
             }
+        NEXTLOOP:
         }
-
         //情報の更新と描画
+        updateChara();
 
-        //描画.先に記述するほど後ろ側に配置されるの
-        SDL_RenderClear(renderer);
-
-        //背景
-        updateBackground(&bg, 1.0f / 60);
-        renderBackground(&bg, renderer);
-
-        //プレイヤー
-        updatePlayer(&player, 1.0f / 60);
-        renderPlayer(&player, renderer);
-
-
-        //オブジェクト
-        for (int i = 0; i < NUM_OBJECTS; ++i) {
-            updateObject(&objects[i], 1.0f / 60);
-            if (checkCollision(&player, &objects[i])) {
-                combatPower += getObjectEffect(&objects[i]);
-                objects[i].y = WINDOW_HEIGHT + 1; // 画面外に移動して再配置
-                const char* imageFile = objectImages[rand() % 2]; // 新しいオブジェクトの種類を選択
-                initObject(&objects[i], renderer, imageFile);
-            }
+        //当たり判定
+        for (int i = 0; i < NumGameChara; i++) {
+            for (int j = i + 1; j < NumGameChara; j++)
+                Collision(&(gameChara[i]), &(gameChara[j]));
         }
 
-        for (int i = 0; i < NUM_OBJECTS; ++i) {
-            renderObject(&objects[i], renderer);
-        }
-
-        //戦闘力
-        updateCombatPowerText(renderer, combatPower, font, textColor);
-
-        //ボス
-        Uint32 currentTime = SDL_GetTicks();
-        if (!bossAppeared && currentTime - startTime >= BOSS_APPEAR_TIME) {
-            bossAppeared = 1;
-        }
-        if (bossAppeared) {
-            updateBoss(&boss, 1.0f / 60);
-            renderBoss(&boss, renderer);
-            renderBossHealth(renderer); // ボスの体力を表示する
-
-            //ゲームの動作がこんなこと起きないようになってるが？？？
-            if (boss.y >= player.y - boss.height) { // ボスがプレイヤーに到達した場合
-                if (combatPower < boss.power) {
-                    printf("Game Over! Player power: %d, Boss power: %d\n", combatPower, boss.power);
-                    quit = 1;
-                } else {
-                    printf("Game Clear! Player power: %d, Boss power: %d\n", combatPower, boss.power);
-                    quit = 1;
-                }
-            }
-        }
-
-
-
-        SDL_RenderPresent(renderer);
+        
+        //ゲームの状態更新
+        renderWindow();
         SDL_Delay(1000 / 60); // 60 FPS
     }
 
-    TTF_CloseFont(font);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(Game.renderer);
+    SDL_DestroyWindow(Game.window);
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();

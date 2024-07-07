@@ -1,0 +1,3 @@
+#width,height,speed,image_file
+96 96 200 ./img/+10.png
+96 96 200 ./img/-10.png
