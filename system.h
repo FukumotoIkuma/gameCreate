@@ -50,10 +50,10 @@ typedef struct CharaInfo_t {
     SDL_FPoint dir;        // 現在の方向（大きさ最大1となる成分）
     SDL_FPoint point;      // 現在の座標（画像の中心、壁のみ左上）
     SDL_Point ani;         // 現在のアニメーションパターン（x:動作，y:向き）
+    int power;              // パワー（プレイヤー、オブジェクト）
+    int max_speed;          //最大速度(プレイヤー)
+    int hp;                 // HP（boss）
     union {
-        int power;  // パワー（プレイヤー、オブジェクト）
-        int max_speed;//最大速度(プレイヤー)
-        int hp;  // HP（boss）
         BallType oType;//オブジェクト用のタイプ設定
     };
 } CharaInfo;
