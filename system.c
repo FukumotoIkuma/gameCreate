@@ -167,9 +167,15 @@ player:CharaInfo
 object:CharaInfo
     オブジェクト
 */
-void collisionObject(CharaInfo* player , CharaInfo* object){
+void collisionBall(CharaInfo* player , CharaInfo* ball){
+
+    float y_distanve = player->point.y - (ball->point.y+ball->entity->h);
+    if (y_distanve>0) return;
+    if (ball->point.x+ball->entity->w<player->point.x || 
+    player->point.x+player->entity->w<ball->point.x) return;
+    
     //プレイヤーパワーの変更
-    switch (object->oType)
+    switch (ball->oType)
     {
     case OS_PLUS10:
         player->power += 10;
@@ -181,18 +187,20 @@ void collisionObject(CharaInfo* player , CharaInfo* object){
         break;
     }
     //オブジェクトの再配置
-    object->point.y = WINDOW_HEIGHT+1;//画面外に映すことで、再配置される
-    setBalltype(object,getRandomBall());
+    ball->point.y = WINDOW_HEIGHT+1;//画面外に映すことで、再配置される
+    setBalltype(ball,getRandomBall());
 }
 
 /*ボスとの衝突*/
 void collisionBoss(CharaInfo* player ,CharaInfo* boss){
     if (boss->point.y >= player->point.y - boss->entity->h){
         printf("Game Over! Player power: %d, Boss power: %d\n", player->power, boss->power);
-    }else{
+        Game.stts = GS_End;
+    }/*else{
         printf("Game Clear! Player power: %d, Boss power: %d\n", player->power, boss->power);
-    }
-    Game.stts = GS_End;
+    }*/
+   //意味がわからない。崩壊してる。
+    
 
 }
 
@@ -222,7 +230,7 @@ void Collision(CharaInfo* ci , CharaInfo* cj){
     switch (cj->type)
     {
         case CT_Ball:
-            collisionObject(ci,cj);
+            collisionBall(ci,cj);
             break;
         case CT_Boss:
             collisionBoss(ci,cj);
