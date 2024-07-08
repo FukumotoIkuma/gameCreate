@@ -265,5 +265,29 @@ BallType getRandomBall() {
     int randomIndex = rand() % BALLTYPE_NUM;
     return (BallType)randomIndex;
 }
+
+/*キー入力をゲームに反映
+key_eventはdown,upのみ受け付ける*/
+void handleKeyInput(SDL_Event* key_event){
+    if (key_event->type != SDL_KEYDOWN && key_event->type != SDL_KEYUP)
+
+        return;
+
+    //downならTrue,upならfalse
+    SDL_bool is_key_down  = key_event->type == SDL_KEYDOWN;
+    
+    switch (key_event->key.keysym.sym) {
+            case SDLK_LEFT:
+                Game.input.left = is_key_down;
+                break;
+            case SDLK_RIGHT:
+                Game.input.right = is_key_down;
+                break;
+            case SDLK_LSHIFT:
+                Game.input.l_shift = is_key_down;
+            case SDLK_RSHIFT:
+                Game.input.r_shift = is_key_down;
+        }
+}
 /* end of system.c */
 

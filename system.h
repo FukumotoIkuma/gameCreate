@@ -98,6 +98,7 @@ extern int InitSystem(const char* charaFileName,const char* objectFileName) ;
 extern int PrintError(const char* message);
 extern void Collision(CharaInfo* ci , CharaInfo* cj);
 extern void setBalltype(CharaInfo* target,BallType bType);
+extern void handleKeyInput(SDL_Event* key_event);
 //window.c
 extern int InitWindow();
 extern void renderWindow();
