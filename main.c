@@ -94,14 +94,6 @@ void updateChara(){
 
 }
 
-/*他でチェックしきれないゲームステータスの変化を追跡する*/
-void updateGameInfo(){
-    return;
-}
-
-
-
-
 int main(int argc, char* argv[]) {
     
     //初期化
@@ -109,8 +101,6 @@ int main(int argc, char* argv[]) {
     if (0>InitSystem("./data/chara.data", "./data/ball.data")) return PrintError("failed to init system");
         
     if (0>InitWindow()) return PrintError("failed to init window");
-
-    //その他
     
     SDL_Event event;
     
@@ -150,7 +140,7 @@ int main(int argc, char* argv[]) {
                 handleKeyInput(&event);
             }
         }
-        //情報の更新と描画
+        //情報の更新
         updateChara();
 
         //当たり判定
@@ -160,7 +150,7 @@ int main(int argc, char* argv[]) {
         }
 
         
-        //ゲームの状態更新
+        //描画
         renderWindow();
         SDL_Delay(1000 / 60); // 60 FPS
     }
