@@ -134,7 +134,7 @@ int renderBossHealth(CharaInfo*boss) {
 
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
-    TTF_CloseFont(font_boss_health);
+    // TTF_CloseFont(font_boss_health);
     return 1;
 }
 
@@ -194,4 +194,9 @@ void renderWindow(){
     }
     SDL_RenderPresent(Game.renderer);
 
+}
+
+void destroyWindow(){
+    TTF_CloseFont(font_boss_health);
+    TTF_CloseFont(font_player_power);
 }
