@@ -128,6 +128,7 @@ void InitCharaInfo(){
             gameChara[i].point.x = 100;
             gameChara[i].point.y = WINDOW_HEIGHT - gameChara[i].entity->h;
             gameChara[i].max_speed = 300;//マジックナンバー
+            gameChara[i].power = 0;
             Game.player = &(gameChara[i]);
             break;
         case CT_Boss:
