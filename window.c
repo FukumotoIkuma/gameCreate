@@ -142,9 +142,7 @@ void renderWindow(){
         //非表示は処理しない
         if (gameChara[i].stts == CS_Disable) continue;
 
-        //メインの描画
-        if (gameChara[i].type == CT_Player)
-            printf("positionx:%f\n",gameChara[i].point.x);    
+        //メインの描画   
         SDL_Rect dst = {gameChara[i].point.x,gameChara[i].point.y,gameChara[i].entity->w,gameChara[i].entity->h};
         SDL_RenderCopy(Game.renderer,gameChara[i].entity->texture,NULL,&dst);
        

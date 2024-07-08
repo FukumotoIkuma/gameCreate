@@ -45,7 +45,7 @@ void updateChara(){
         case CT_Player:
             int dir = (Game.input.right-Game.input.left);//intにキャストしないと元々boolだからバグる
             float diff = dir*gameChara[i].max_speed * Game.timeStep;
-            printf("dir:%d\tspeed:%d\tdiff:%f\n",dir,gameChara[i].max_speed,diff);
+            // printf("dir:%d\tspeed:%d\tdiff:%f\n",dir,gameChara[i].max_speed,diff);
             if (Game.input.l_shift || Game.input.r_shift)
                 diff *= 1/3;
             gameChara[i].point.x += diff;
@@ -149,16 +149,18 @@ int main(int argc, char* argv[]) {
 
                 for (int i = 0; i < NumGameChara; ++i) {
                     //クリックが関係していれば処理開始
-                    if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x &&
-                        gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y))
-                        goto NEXTLOOP;
-                    switch (gameChara[i].oType)
+                    if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x+gameChara[i].entity->w&&
+                        gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y+gameChara[i].entity->h)){
+                        printf("%d:nextloop\n",gameChara[i].type);
+                        continue;
+                        }
+                    switch (gameChara[i].bType)
                     {
                     case OS_PLUS10:
-                        gameChara[i].oType = OS_MINUS10;
+                        setBalltype(&gameChara[i],OS_MINUS10);
                         break;
                     case OS_MINUS10:
-                        gameChara[i].type = OS_PLUS10;
+                        setBalltype(&gameChara[i],OS_PLUS10);
                         break;
                     
                     default:

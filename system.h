@@ -54,7 +54,7 @@ typedef struct CharaInfo_t {
     int max_speed;          //最大速度(プレイヤー)
     int hp;                 // HP（boss）
     union {
-        BallType oType;//オブジェクト用のタイプ設定
+        BallType bType;//オブジェクト用のタイプ設定
     };
 } CharaInfo;
 
@@ -97,6 +97,7 @@ typedef struct {
 extern int InitSystem(const char* charaFileName,const char* objectFileName) ;
 extern int PrintError(const char* message);
 extern void Collision(CharaInfo* ci , CharaInfo* cj);
+extern void setBalltype(CharaInfo* target,BallType bType);
 //window.c
 extern int InitWindow();
 extern void renderWindow();

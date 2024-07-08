@@ -16,7 +16,7 @@ CharaTypeInfo ballType[BALLTYPE_NUM];
 /*関数*/
 static void InitCharaInfo();
 static BallType getRandomBall();
-static void setBalltype(CharaInfo* target,BallType oType);
+void setBalltype(CharaInfo* target,BallType bType);
 
 /**/
 int PrintError(const char* message) {
@@ -177,7 +177,7 @@ void collisionBall(CharaInfo* player , CharaInfo* ball){
     player->point.x+player->entity->w<ball->point.x) return;
     
     //プレイヤーパワーの変更
-    switch (ball->oType)
+    switch (ball->bType)
     {
     case OS_PLUS10:
         player->power += 10;
@@ -243,9 +243,9 @@ void Collision(CharaInfo* ci , CharaInfo* cj){
 }
 
 
-void setBalltype(CharaInfo* target,BallType oType){
-    target->oType = oType;
-    target->entity = &ballType[oType];
+void setBalltype(CharaInfo* target,BallType bType){
+    target->bType = bType;
+    target->entity = &ballType[bType];
 }
 
 /*ランダムなオブジェクトを取得する関数
