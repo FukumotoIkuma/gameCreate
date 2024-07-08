@@ -136,6 +136,7 @@ void InitCharaInfo(){
             gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w) / 2;
             gameChara[i].point.y = -(gameChara[i].entity->h);
             gameChara[i].power = 100;//マジックナンバー
+            gameChara[i].hp = 1000000;
             break;
         case CT_Ball:
             gameChara[i].point.x = rand() % (531 - 190) + 190;//マジックナンバー

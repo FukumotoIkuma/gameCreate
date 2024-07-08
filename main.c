@@ -71,7 +71,6 @@ void updateChara(){
         case CT_Boss:
             //一定時間経過でボスが出現
             if (gameChara[i].stts == CS_Disable){
-                continue;//一旦強制退場
                 Uint32 currentTime = SDL_GetTicks();
                 if (currentTime - Game.startTime >= BOSS_APPEAR_TIME) 
                         gameChara[i].stts = CS_Normal;
