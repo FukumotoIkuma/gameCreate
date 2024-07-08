@@ -103,31 +103,11 @@ void updateGameInfo(){
 
 
 int main(int argc, char* argv[]) {
-    //エラーのハンドリング
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Failed to initialize SDL! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("Failed to initialize SDL_image! IMG_Error: %s\n", IMG_GetError());
-        return 1;
-    }
-
-    if (TTF_Init() == -1) {
-        printf("Failed to initialize SDL_ttf! TTF_Error: %s\n", TTF_GetError());
-        return 1;
-    }
-
-    //処理開始
     
     //初期化
     
     if (0>InitSystem("./data/chara.data", "./data/ball.data")) return PrintError("failed to init system");
         
-    
-    
     if (0>InitWindow()) return PrintError("failed to init window");
 
     //その他
@@ -184,12 +164,8 @@ int main(int argc, char* argv[]) {
         renderWindow();
         SDL_Delay(1000 / 60); // 60 FPS
     }
-
-    SDL_DestroyRenderer(Game.renderer);
-    SDL_DestroyWindow(Game.window);
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
+    
+    destroyWindow();
 
     return 0;
 }

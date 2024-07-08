@@ -101,6 +101,7 @@ extern void setBalltype(CharaInfo* target,BallType bType);
 //window.c
 extern int InitWindow();
 extern void renderWindow();
+extern void destroyWindow();
 //変数
 //system.c
 extern SDL_Window* window;

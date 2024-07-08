@@ -26,6 +26,13 @@ int PrintError(const char* message) {
 
 int InitSystem(const char* charaFileName,const char* objectFileName) 
 {
+    //初期化of初期化
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) return PrintError(SDL_GetError());
+
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) return PrintError(IMG_GetError());
+
+    if (TTF_Init() == -1) return PrintError(TTF_GetError());
+
     //ステータスの更新
     Game.stts = GS_Ready; 
     int ret = 0;

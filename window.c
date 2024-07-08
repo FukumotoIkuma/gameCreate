@@ -199,4 +199,9 @@ void renderWindow(){
 void destroyWindow(){
     TTF_CloseFont(font_boss_health);
     TTF_CloseFont(font_player_power);
+    SDL_DestroyRenderer(Game.renderer);
+    SDL_DestroyWindow(Game.window);
+    TTF_Quit();
+    IMG_Quit();
+    SDL_Quit();
 }
