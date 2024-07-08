@@ -8,3 +8,4 @@ sdl_window
 system.o
 boss_health
 archive
+window.o

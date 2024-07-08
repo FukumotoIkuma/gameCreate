@@ -1,12 +1,28 @@
 #include "system.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-
+//変数
+static TTF_Font* font_boss_health;
+static TTF_Font* font_player_power;
+static SDL_Color color_white;
+static SDL_Color color_red;
 
 /*描画関連の初期化*/ 
 int InitWindow() 
 {
     int ret = 0;
+    //フォントの初期化
+
+    font_boss_health = TTF_OpenFont("font.ttf", 18);
+    if (font_boss_health == NULL) return PrintError(TTF_GetError());
+
+    font_player_power = TTF_OpenFont("font.ttf", 24);
+    if (font_player_power == NULL) return PrintError(TTF_GetError());
+
+    color_white = (SDL_Color){ 255, 255, 255, 255 };
+    color_red = (SDL_Color){ 255, 0, 0, 255 }; 
+
+
     //ウィンドウとレンダラーの初期化
     SDL_Window* window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, 
     SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -73,17 +89,12 @@ int CompSort(const void *a, const void *b) {
 }
 
 int renderPlayerPower() {
-    TTF_Font* font = TTF_OpenFont("font.ttf", 24);
-    if (font == NULL) return PrintError(TTF_GetError());
-
-    SDL_Color color = { 255, 255, 255, 255 };
-    
     //テキストを生成
     char text[20];
     snprintf(text, sizeof(text), "power: %d", Game.player->power);
     
     //以下レンダリング
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, color);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font_player_power, text, color_white);
     
     if (!textSurface) return PrintError(TTF_GetError());
     
@@ -101,23 +112,20 @@ int renderPlayerPower() {
     return 1;
 }
 int renderBossHealth(CharaInfo*boss) {
-    SDL_Color textColor = { 255, 0, 0, 255 }; // 赤色のテキスト
     char healthText[50];
     snprintf(healthText, sizeof(healthText), "Boss Health: %d", boss->hp);
 
-    TTF_Font* font = TTF_OpenFont("font.ttf", 18);
-    if (font == NULL) return PrintError(TTF_GetError());
 
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, healthText, textColor);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font_boss_health, healthText, color_red);
     if (textSurface == NULL) {
-        TTF_CloseFont(font);
+        TTF_CloseFont(font_boss_health);
         return PrintError(SDL_GetError());
     }
 
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(Game.renderer, textSurface);
     if (textTexture == NULL) {
         SDL_FreeSurface(textSurface);
-        TTF_CloseFont(font);
+        TTF_CloseFont(font_boss_health);
         return PrintError(SDL_GetError());
     }
 
@@ -126,7 +134,7 @@ int renderBossHealth(CharaInfo*boss) {
 
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
-    TTF_CloseFont(font);
+    TTF_CloseFont(font_boss_health);
     return 1;
 }
 
