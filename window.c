@@ -133,6 +133,8 @@ int renderBossHealth(CharaInfo*boss) {
 
 /*画面の更新*/
 void renderWindow(){
+    //画面のクリア
+    SDL_RenderClear(Game.renderer);
     //エラー出るから放置
     //qsort(gameChara, MAX_GAME_CHARA, sizeof(CharaInfo), CompSort);
     
