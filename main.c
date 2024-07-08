@@ -17,7 +17,7 @@ void updateChara(){
             float diff = dir*gameChara[i].max_speed * Game.timeStep;
             // printf("dir:%d\tspeed:%d\tdiff:%f\n",dir,gameChara[i].max_speed,diff);
             if (Game.input.l_shift || Game.input.r_shift)
-                diff *= 1/3;
+                diff *= 1.0/3;
             gameChara[i].point.x += diff;
 
             // マップの範囲を超えないように制限する
