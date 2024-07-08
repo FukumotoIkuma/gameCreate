@@ -3,6 +3,7 @@
 //キャラ設定用
 #define MAX_LINEBUF 256
 #define MAX_GAME_CHARA 256
+#define BOSS_APPEAR_TIME 10000 // ボスが出現する時間（ミリ秒）
 
 //ウィンドウ
 #define WINDOW_WIDTH 800
