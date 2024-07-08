@@ -151,7 +151,6 @@ int main(int argc, char* argv[]) {
                     //クリックが関係していれば処理開始
                     if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x+gameChara[i].entity->w&&
                         gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y+gameChara[i].entity->h)){
-                        printf("%d:nextloop\n",gameChara[i].type);
                         continue;
                         }
                     switch (gameChara[i].bType)
@@ -170,7 +169,6 @@ int main(int argc, char* argv[]) {
             } else if (event.type == SDL_KEYDOWN|| event.type == SDL_KEYUP) {
                 handleKeyInput(&event);
             }
-        NEXTLOOP:
         }
         //情報の更新と描画
         updateChara();
