@@ -7,10 +7,10 @@
 static char gImgFilePath[CHARATYPE_NUM][MAX_LINEBUF];
 static char ballImgFilePath[BALLTYPE_NUM][MAX_LINEBUF];
 int NumGameChara;
-CharaTypeInfo charaType[CHARATYPE_NUM];
+CharaTypeInfo charaType[CHARATYPE_NUM];//キャラタイプごとの基本情報
 CharaInfo* gameChara;
 GameInfo Game;
-CharaTypeInfo ballType[BALLTYPE_NUM];
+CharaTypeInfo ballType[BALLTYPE_NUM];//ボールタイプごとの基本情報
 
 
 /*関数*/
@@ -132,9 +132,9 @@ void InitCharaInfo(){
         switch (ini_chara[i])
         {
         case CT_Player:
-            gameChara[i].point.x = 100;
+            gameChara[i].point.x = 300;
             gameChara[i].point.y = WINDOW_HEIGHT - gameChara[i].entity->h;
-            gameChara[i].max_speed = 300;//マジックナンバー
+            gameChara[i].max_speed = 300;
             gameChara[i].power = 0;
             Game.player = &(gameChara[i]);
             break;
@@ -142,11 +142,11 @@ void InitCharaInfo(){
             gameChara[i].stts = CS_Disable;
             gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w) / 2;
             gameChara[i].point.y = -(gameChara[i].entity->h);
-            gameChara[i].power = 100;//マジックナンバー
+            gameChara[i].power = 100;
             gameChara[i].hp = 1000000;
             break;
         case CT_Ball:
-            gameChara[i].point.x = rand() % (531 - 190) + 190;//マジックナンバー
+            gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
             gameChara[i].point.y = -(gameChara[i].entity->h);
 
             //ランダムにオブジェクトタイプを設定
@@ -264,6 +264,13 @@ BallType
 BallType getRandomBall() {
     int randomIndex = rand() % BALLTYPE_NUM;
     return (BallType)randomIndex;
+}
+int getRandomBallPosition_X(CharaInfo* chara){
+    int over_map = 10;
+    int over_left = MAP_LEFT-over_map;
+    int over_right = MAP_RIGHT+over_map;
+    int res = rand() % ((over_right-chara->entity->w)-over_left) + over_left;
+    return res;
 }
 
 /*キー入力をゲームに反映

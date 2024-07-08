@@ -4,10 +4,15 @@
 #define MAX_LINEBUF 256
 #define MAX_GAME_CHARA 256
 #define BOSS_APPEAR_TIME 10000 // ボスが出現する時間（ミリ秒）
+#define SNEAK_SPEED_MODIFIER 1.0/3
 
 //ウィンドウ
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+//マップ
+#define MAP_LEFT 200
+#define MAP_RIGHT 600
 
 
 //キャラタイプ
@@ -100,6 +105,7 @@ extern int PrintError(const char* message);
 extern void Collision(CharaInfo* ci , CharaInfo* cj);
 extern void setBalltype(CharaInfo* target,BallType bType);
 extern void handleKeyInput(SDL_Event* key_event);
+extern int getRandomBallPosition_X(CharaInfo* chara);
 //window.c
 extern int InitWindow();
 extern void renderWindow();

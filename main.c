@@ -17,24 +17,22 @@ void updateChara(){
             float diff = dir*gameChara[i].max_speed * Game.timeStep;
             // printf("dir:%d\tspeed:%d\tdiff:%f\n",dir,gameChara[i].max_speed,diff);
             if (Game.input.l_shift || Game.input.r_shift)
-                diff *= 1.0/3;
+                diff *= SNEAK_SPEED_MODIFIER;
             gameChara[i].point.x += diff;
 
             // マップの範囲を超えないように制限する
-            if (gameChara[i].point.x<200) 
-                gameChara[i].point.x = 200;
-            if (gameChara[i].point.x>600-gameChara[i].entity->w) 
-                gameChara[i].point.x = 600-gameChara[i].entity->w;//マジックナンバー
-            
-            
-
+            if (gameChara[i].point.x<MAP_LEFT) 
+                gameChara[i].point.x = MAP_LEFT;
+            if (MAP_RIGHT<gameChara[i].point.x+gameChara[i].entity->w) 
+                gameChara[i].point.x = MAP_RIGHT-gameChara[i].entity->w;
             break;
         case CT_Ball:
             gameChara[i].point.y += gameChara[i].entity->speed*Game.timeStep;
 
             //画面下部を超えたら上に再出現
             if (gameChara[i].point.y>=WINDOW_HEIGHT){
-                gameChara[i].point.x = rand() % (531 - 190) + 190;//マジックナンバー
+                
+                gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
                 gameChara[i].point.y = -gameChara[i].entity->h; // 画面上部から再出現する  
             }
             break;
