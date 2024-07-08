@@ -8,7 +8,8 @@
 
 #include "system.h"
 
-
+//変数
+static SDL_Event event;
 
 /*
 キャラ情報の更新
@@ -70,6 +71,40 @@ void updateChara(){
 
 }
 
+void inputHandler(){
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            Game.stts = GS_End;
+
+        } else if (event.type == SDL_MOUSEBUTTONDOWN) {//マウス
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            for (int i = 0; i < NumGameChara; ++i) {
+                //クリックが関係していれば処理開始
+                if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x+gameChara[i].entity->w&&
+                    gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y+gameChara[i].entity->h)){
+                    continue;
+                    }
+                switch (gameChara[i].bType)
+                {
+                case OS_PLUS10:
+                    setBalltype(&gameChara[i],OS_MINUS10);
+                    break;
+                case OS_MINUS10:
+                    setBalltype(&gameChara[i],OS_PLUS10);
+                    break;
+                
+                default:
+                    break;
+                }
+            }
+        } else if (event.type == SDL_KEYDOWN|| event.type == SDL_KEYUP) {//キーボード
+            handleKeyInput(&event);
+        }
+    }
+
+}
 int main(int argc, char* argv[]) {
     
     //初期化
@@ -78,44 +113,14 @@ int main(int argc, char* argv[]) {
         
     if (0>InitWindow()) return PrintError("failed to init window");
     
-    SDL_Event event;
     
     
     //メインループ
     Game.stts = GS_Playing;
     while (Game.stts) {
         //入力の処理
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                Game.stts = GS_End;
-
-            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                int mouseX, mouseY;
-                SDL_GetMouseState(&mouseX, &mouseY);
-
-                for (int i = 0; i < NumGameChara; ++i) {
-                    //クリックが関係していれば処理開始
-                    if (!(gameChara[i].point.x<=mouseX && mouseX<=gameChara[i].point.x+gameChara[i].entity->w&&
-                        gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y+gameChara[i].entity->h)){
-                        continue;
-                        }
-                    switch (gameChara[i].bType)
-                    {
-                    case OS_PLUS10:
-                        setBalltype(&gameChara[i],OS_MINUS10);
-                        break;
-                    case OS_MINUS10:
-                        setBalltype(&gameChara[i],OS_PLUS10);
-                        break;
-                    
-                    default:
-                        break;
-                    }
-                }
-            } else if (event.type == SDL_KEYDOWN|| event.type == SDL_KEYUP) {
-                handleKeyInput(&event);
-            }
-        }
+        inputHandler();
+        
         //情報の更新
         updateChara();
 
