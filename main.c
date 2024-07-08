@@ -1,7 +1,6 @@
 #include "system.h"
 
 
-
 //変数
 static SDL_Event event;
 
@@ -80,18 +79,30 @@ void inputHandler(){
                     gameChara[i].point.y<=mouseY && mouseY<=gameChara[i].point.y+gameChara[i].entity->h)){
                     continue;
                     }
-                switch (gameChara[i].bType)
+                switch (gameChara[i].type)
                 {
-                case OS_PLUS10:
-                    setBalltype(&gameChara[i],OS_MINUS10);
+                case CT_Ball:
+                    switch (gameChara[i].bType)
+                    {
+                    case OS_PLUS10:
+                        setBalltype(&gameChara[i],OS_MINUS10);
+                        break;
+                    case OS_MINUS10:
+                        setBalltype(&gameChara[i],OS_PLUS10);
+                        break;
+                    
+                    default:
+                        break;
+                    }
                     break;
-                case OS_MINUS10:
-                    setBalltype(&gameChara[i],OS_PLUS10);
+                case CT_Boss://体力を減らす
+                    gameChara[i].hp -= Game.player->power;
+                    if (gameChara[i].hp <0) gameChara[i].hp = 0;
                     break;
-                
                 default:
                     break;
                 }
+                
             }
         } else if (event.type == SDL_KEYDOWN|| event.type == SDL_KEYUP) {//キーボード
             handleKeyInput(&event);
