@@ -38,15 +38,37 @@ void updateChara(){
             break;
         case CT_Boss:
             //一定時間経過でボスが出現
-            if (gameChara[i].stts == CS_Disable){
+            switch (gameChara[i].stts)
+            {
+            case CS_Disable:
                 Uint32 currentTime = SDL_GetTicks();
                 if (currentTime - Game.startTime >= BOSS_APPEAR_TIME) 
-                        gameChara[i].stts = CS_Normal;
-                else
-                    continue;//これ以上処理は必要ない
+                        gameChara[i].stts = CS_Appeare;
+                break;
+            case CS_Appeare:
+                //ボスの移動
+                gameChara[i].point.y += gameChara[i].entity->speed*Game.timeStep;
+                if(gameChara[i].point.y>=0) {
+                    gameChara[i].point.y = 0;
+                    gameChara[i].stts = CS_Normal;
                 }
-            //ボスの移動
-            gameChara[i].point.y += gameChara[i].entity->speed*Game.timeStep;
+                break;
+            case CS_Normal:
+                if (gameChara[i].hp<=0) {
+                    gameChara[i].stts = CS_DisAppeare;
+                }
+                break;
+            case CS_DisAppeare:
+                gameChara[i].point.y -= gameChara[i].entity->speed*Game.timeStep;
+                if(gameChara[i].point.y+gameChara[i].entity->h<0) {
+                    gameChara[i].stts = CS_Disable;
+                    gameChara[i].hp = 100000;
+                }
+                break;
+
+            default:
+                break;
+            }
             break;
         case CT_BackGround:
             gameChara[i].point.y += gameChara[i].entity->speed * Game.timeStep;

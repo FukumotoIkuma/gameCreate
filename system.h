@@ -39,6 +39,8 @@ typedef struct {
 typedef enum {
     CS_Disable = 0, // 非表示
     CS_Normal  = 1, // 通常
+    CS_Appeare = 2,
+    CS_DisAppeare = 3,
 } CharaStts;
 
 //ボールタイプ
