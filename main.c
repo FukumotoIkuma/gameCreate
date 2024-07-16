@@ -3,8 +3,15 @@
 // 変数
 static SDL_Event event;
 
-void bossFireBall(){
-    printf("boss fire ball\n");
+void bossFireBall(CharaInfo* boss){
+    for (int i=0;i<MAX_FIRE_BALL_COUNT;++i){
+        if (fireBalls[i]->stts == CS_Disable){
+            fireBalls[i]->stts = CS_Normal;
+            fireBalls[i]->point.x = (boss->point.x+boss->entity->w)/2;//位置正確には合わせて無いのでご愛嬌
+            fireBalls[i]->point.y = boss->point.y;
+            break;
+        }
+    }
     
 }
 
@@ -14,6 +21,9 @@ void bossFireBall(){
 */
 void updateChara() {
     for (int i = 0; i < NumGameChara; ++i) {
+
+        if (gameChara[i].stts ==CS_Disable && 
+            gameChara[i].type != CT_Boss) continue;//非表示は基本処理しない
         switch (gameChara[i].type) {
             case CT_Player: {
                 int dir = (Game.input.right - Game.input.left); // intにキャストしないと元々boolだからバグる
@@ -36,10 +46,20 @@ void updateChara() {
             case CT_Ball: {
                 gameChara[i].point.y += gameChara[i].entity->speed * Game.timeStep;
 
-                // 画面下部を超えたら上に再出現
+                // 画面下部を超えた場合
                 if (gameChara[i].point.y >= WINDOW_HEIGHT) {
-                    gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
-                    gameChara[i].point.y = -gameChara[i].entity->h; // 画面上部から再出現する
+
+                    switch (gameChara[i].bType){
+                        case OS_FIREBALL://fireballなら非表示
+                            gameChara[i].stts = CS_Disable;
+                            break;
+                        
+                        default://それ以外は上に再出現
+                            gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
+                            gameChara[i].point.y = -gameChara[i].entity->h; // 画面上部から再出現する
+                            break;
+                    }
+
                 }
                 break;
             }
@@ -65,7 +85,7 @@ void updateChara() {
                         if (gameChara[i].action_frame_countter %120 ==0){
                             //このリセットタイミングは複数攻撃の周期の最小公倍数にすれば安全にリセットできる。
                             gameChara[i].action_frame_countter = 0;
-                            bossFireBall();
+                            bossFireBall(&gameChara[i]);
                         }
                         gameChara[i].action_frame_countter ++;
                         if (gameChara[i].hp <= 0) {

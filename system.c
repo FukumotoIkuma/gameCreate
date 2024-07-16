@@ -9,13 +9,14 @@ static char ballImgFilePath[BALLTYPE_NUM][MAX_LINEBUF];
 int NumGameChara;
 CharaTypeInfo charaType[CHARATYPE_NUM];//キャラタイプごとの基本情報
 CharaInfo* gameChara;
+CharaInfo** fireBalls;
 GameInfo Game;
 CharaTypeInfo ballType[BALLTYPE_NUM];//ボールタイプごとの基本情報
 
 
 /*関数*/
 static void InitCharaInfos();
-static void InitCharaInfo();
+CharaInfo*  InitCharaInfo();
 static BallType getRandomBall();
 void setBalltype(CharaInfo* target,BallType bType);
 
@@ -104,6 +105,11 @@ int InitSystem(const char* charaFileName,const char* objectFileName)
         ret = PrintError("failed to allocate the chara data.");
         goto CLOSEFILE;
     }
+    fireBalls = (CharaInfo**) malloc(sizeof(CharaInfo) * MAX_FIRE_BALL_COUNT);
+    if (!fireBalls){
+        ret  = PrintError("failed to allocate the fireball data.");
+        goto CLOSEFILE;
+    }
     // キャラ情報設定 
     InitCharaInfos();
 
@@ -113,7 +119,7 @@ CLOSEFILE:
     return ret;
 }
 
-void InitCharaInfo(CharaType cType){
+CharaInfo* InitCharaInfo(CharaType cType){
     int i = NumGameChara;
     //共通設定
     gameChara[i].type = cType;
@@ -140,6 +146,7 @@ void InitCharaInfo(CharaType cType){
         gameChara[i].point.y = -(gameChara[i].entity->h);
         gameChara[i].power = 100;
         gameChara[i].hp = 1000000;
+        Game.boss = &gameChara[i];
         break;
     case CT_Ball:
         gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
@@ -158,14 +165,28 @@ void InitCharaInfo(CharaType cType){
         break;
     }
     NumGameChara ++;
+    return &gameChara[i];
+
 }
 void InitCharaInfos(){
     //初期キャラ設定
     CharaType ini_chara[] = {CT_BackGround,CT_Player,CT_Ball,CT_Ball,CT_Boss};
     int ini_chara_length = 5;
     
+    //プレイヤー・ボス・通常のボール
     for(int i = 0;i<ini_chara_length;++i){
         InitCharaInfo(ini_chara[i]);
+    }
+    //ボス攻撃のファイアーボール
+    for (int i=0;i<MAX_FIRE_BALL_COUNT;++i){
+        
+        fireBalls[i] = InitCharaInfo(CT_Ball);
+    
+        setBalltype(fireBalls[i],OS_FIREBALL);
+        fireBalls[i]->stts = CS_Disable;
+        fireBalls[i]->power = Game.boss->power*1.0;//何かしら倍率かければ、ボスの攻撃力と攻撃ごとの攻撃力に関連性を持たせられる
+
+
     }
 
 }
@@ -187,7 +208,7 @@ void collisionBall(CharaInfo* player , CharaInfo* ball){
     if (ball->point.x+ball->entity->w<player->point.x || 
     player->point.x+player->entity->w<ball->point.x) return;
     
-    //プレイヤーパワーの変更
+    //プレイヤーへの影響
     switch (ball->bType)
     {
     case OS_PLUS10:
@@ -202,12 +223,24 @@ void collisionBall(CharaInfo* player , CharaInfo* ball){
     case OS_ZERO:
         player->power = 0;
         break;
+    case OS_FIREBALL:
+        player->hp -= ball->power;
+        printf("player hp is %d\n",player->hp);
     default:
         break;
     }
     //オブジェクトの再配置
-    ball->point.y = WINDOW_HEIGHT+1;//画面外に映すことで、再配置される
-    setBalltype(ball,getRandomBall());
+    switch (ball->bType)
+    {
+    case OS_FIREBALL:
+        ball->stts = CS_Disable;
+        break;
+    
+    default:
+        ball->point.y = WINDOW_HEIGHT+1;//画面外に映すことで、再配置される
+        setBalltype(ball,getRandomBall());
+        break;
+    }
 }
 
 /*ボスとの衝突*/

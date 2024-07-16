@@ -5,6 +5,7 @@
 #define MAX_GAME_CHARA 256
 #define BOSS_APPEAR_TIME 10000 // ボスが出現する時間（ミリ秒）
 #define SNEAK_SPEED_MODIFIER 1.0/3
+#define MAX_FIRE_BALL_COUNT 5//ボスのファイアーボールとして確保する数。多少dps上げても対応できる。
 
 //ウィンドウ
 #define WINDOW_WIDTH 800
@@ -44,12 +45,13 @@ typedef enum {
 } CharaStts;
 
 //ボールタイプ
-#define BALLTYPE_NUM 4
+#define BALLTYPE_NUM 5
 typedef enum{
     OS_PLUS10       = 0,
     OS_MINUS10      = 1,
     OS_TIME2        = 2,
-    OS_ZERO         = 3
+    OS_ZERO         = 3,
+    OS_FIREBALL
 }BallType;
 
 /*キャラクター情報*/
@@ -98,6 +100,7 @@ typedef struct {
     Uint32 startTime;
     float timeStep;                 // 時間の増分(1フレームの時間,s)
     CharaInfo* player;              // プレイヤー
+    CharaInfo* boss;                //ボス
     SDL_Window* window;             // ウインドウ
     SDL_Renderer* renderer;           // レンダラー
 } GameInfo;
@@ -122,6 +125,7 @@ extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern CharaTypeInfo charaType[CHARATYPE_NUM];
 extern CharaInfo* gameChara;
+extern CharaInfo** fireBalls;
 extern int NumGameChara;
 extern GameInfo Game;
 extern CharaTypeInfo ballType[BALLTYPE_NUM];
