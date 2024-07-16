@@ -14,6 +14,7 @@ CharaTypeInfo ballType[BALLTYPE_NUM];//ボールタイプごとの基本情報
 
 
 /*関数*/
+static void InitCharaInfos();
 static void InitCharaInfo();
 static BallType getRandomBall();
 void setBalltype(CharaInfo* target,BallType bType);
@@ -104,7 +105,7 @@ int InitSystem(const char* charaFileName,const char* objectFileName)
         goto CLOSEFILE;
     }
     // キャラ情報設定 
-    InitCharaInfo();
+    InitCharaInfos();
 
 
 CLOSEFILE:
@@ -112,57 +113,59 @@ CLOSEFILE:
     return ret;
 }
 
-void InitCharaInfo(){
+void InitCharaInfo(CharaType cType){
+    int i = NumGameChara;
+    //共通設定
+    gameChara[i].type = cType;
+    gameChara[i].stts = CS_Normal;
+    gameChara[i].entity = &(charaType[cType]);
+    gameChara[i].dir = (SDL_FPoint) { 0.0, 0.0 };
+    gameChara[i].ani = (SDL_Point) { 0, 0 };
+
+
+    //キャラごとの設定
+    switch (cType)
+    {
+    case CT_Player:
+        gameChara[i].point.x = 300;
+        gameChara[i].point.y = WINDOW_HEIGHT - gameChara[i].entity->h;
+        gameChara[i].max_speed = 300;
+        gameChara[i].power = 0;
+        Game.player = &(gameChara[i]);
+        gameChara[i].hp = 300;
+        break;
+    case CT_Boss:
+        gameChara[i].stts = CS_Disable;
+        gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w) / 2;
+        gameChara[i].point.y = -(gameChara[i].entity->h);
+        gameChara[i].power = 100;
+        gameChara[i].hp = 1000000;
+        break;
+    case CT_Ball:
+        gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
+        gameChara[i].point.y = -(gameChara[i].entity->h);
+
+        //ランダムにオブジェクトタイプを設定
+        setBalltype(&gameChara[i],getRandomBall());
+        break;
+    case CT_BackGround:
+        gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w)/2;
+        gameChara[i].point.y = -(gameChara[i].entity->h);
+        break;
+
+    
+    default:
+        break;
+    }
+    NumGameChara ++;
+}
+void InitCharaInfos(){
     //初期キャラ設定
     CharaType ini_chara[] = {CT_BackGround,CT_Player,CT_Ball,CT_Ball,CT_Boss};
     int ini_chara_length = 5;
     
-
     for(int i = 0;i<ini_chara_length;++i){
-        //共通設定
-        NumGameChara ++;
-        gameChara[i].type = ini_chara[i];
-        gameChara[i].stts = CS_Normal;
-        gameChara[i].entity = &(charaType[ini_chara[i]]);
-        gameChara[i].dir = (SDL_FPoint) { 0.0, 0.0 };
-        gameChara[i].ani = (SDL_Point) { 0, 0 };
-
-
-        //キャラごとの設定
-        switch (ini_chara[i])
-        {
-        case CT_Player:
-            gameChara[i].point.x = 300;
-            gameChara[i].point.y = WINDOW_HEIGHT - gameChara[i].entity->h;
-            gameChara[i].max_speed = 300;
-            gameChara[i].power = 0;
-            Game.player = &(gameChara[i]);
-            gameChara[i].hp = 300;
-            break;
-        case CT_Boss:
-            gameChara[i].stts = CS_Disable;
-            gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w) / 2;
-            gameChara[i].point.y = -(gameChara[i].entity->h);
-            gameChara[i].power = 100;
-            gameChara[i].hp = 1000000;
-            break;
-        case CT_Ball:
-            gameChara[i].point.x = getRandomBallPosition_X(&gameChara[i]);
-            gameChara[i].point.y = -(gameChara[i].entity->h);
-
-            //ランダムにオブジェクトタイプを設定
-            setBalltype(&gameChara[i],getRandomBall());
-            break;
-        case CT_BackGround:
-            gameChara[i].point.x = (WINDOW_WIDTH - gameChara[i].entity->w)/2;
-            gameChara[i].point.y = -(gameChara[i].entity->h);
-            break;
-
-        
-        default:
-            break;
-        }
-
+        InitCharaInfo(ini_chara[i]);
     }
 
 }
