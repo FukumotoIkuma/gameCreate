@@ -1,11 +1,4 @@
-bg.o
-main.o
-bg.o
-boss.o
-player.o
-object.o
-sdl_window
 system.o
-boss_health
-archive
 window.o
+main.o
+sdl_window

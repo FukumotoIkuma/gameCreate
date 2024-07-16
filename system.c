@@ -192,6 +192,12 @@ void collisionBall(CharaInfo* player , CharaInfo* ball){
     case OS_MINUS10:
         player->power -= 10;
         break;
+    case OS_TIME2:
+        player->power *= 2;
+        break;
+    case OS_ZERO:
+        player->power = 0;
+        break;
     default:
         break;
     }
@@ -262,8 +268,14 @@ return
 BallType
 */
 BallType getRandomBall() {
-    int randomIndex = rand() % BALLTYPE_NUM;
-    return (BallType)randomIndex;
+    int randomPercent = rand() % 1000;
+    if(randomPercent < 50)
+        return OS_TIME2;
+    else if(randomPercent < 500)
+        return OS_PLUS10;
+    else if(randomPercent < 950)
+        return OS_MINUS10;
+    else return OS_ZERO;
 }
 int getRandomBallPosition_X(CharaInfo* chara){
     int over_map = 10;

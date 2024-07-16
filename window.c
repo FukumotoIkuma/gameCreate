@@ -1,6 +1,7 @@
 #include "system.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
 //変数
 static TTF_Font* font_boss_health;
 static TTF_Font* font_player_power;
@@ -111,7 +112,7 @@ int renderPlayerPower() {
     SDL_DestroyTexture(textTexture);
     return 1;
 }
-int renderBossHealth(CharaInfo*boss) {
+int renderBossHealth(CharaInfo* boss) {
     char healthText[50];
     snprintf(healthText, sizeof(healthText), "Boss Health: %d", boss->hp);
 
@@ -119,7 +120,7 @@ int renderBossHealth(CharaInfo*boss) {
     SDL_Surface* textSurface = TTF_RenderText_Solid(font_boss_health, healthText, color_red);
     if (textSurface == NULL) {
         TTF_CloseFont(font_boss_health);
-        return PrintError(SDL_GetError());
+        return PrintError(TTF_GetError());
     }
 
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(Game.renderer, textSurface);
@@ -157,20 +158,17 @@ void renderWindow(){
         //各キャラの追加の描画
         switch (gameChara[i].type)
         {
-
-            case CT_BackGround:
+            case CT_BackGround: {
                 // 2つ目の背景を描画してシームレスなスクロールを実現
                 SDL_Rect dst2 = {gameChara[i].point.x,gameChara[i].point.y+gameChara[i].entity->h,\
                     gameChara[i].entity->w,gameChara[i].entity->h};
                 SDL_RenderCopy(Game.renderer, gameChara[i].entity->texture, NULL, &dst2);
                 break;
-            case CT_Player:
-                  
-
+            }
+            case CT_Player: {
                 //プレイヤー攻撃力
                 renderPlayerPower();
-                // プレイヤーの当たり判定用矩形を描画（赤色の矩形）
-                //いったいこれはなんなんだ？当たり判定もよくわからんぞ
+                // プレイヤーの当たり判定用矩形を描画（黒色の矩形）
                 SDL_Rect collisionRect = {
                     gameChara[i].point.x + gameChara[i].entity->w / 5,   // x 座標を調整
                     gameChara[i].point.y + gameChara[i].entity->h /8,   // y 座標を調整
@@ -180,20 +178,34 @@ void renderWindow(){
                 SDL_SetRenderDrawColor(Game.renderer, 43, 43, 43, 255);  // 黒色に設定
                 SDL_RenderDrawRect(Game.renderer, &collisionRect);
                 break;
-
-            case CT_Boss:
+            }
+            case CT_Boss: {
                 //ボス体力
                 renderBossHealth(&gameChara[i]);
                 break;
-            case CT_Ball:
-
+            }
+            case CT_Ball: {
+                break;
+            }
             default:
                 break;
         }
-        
+    }
+
+     // ゲームクリア時のテキスト表示
+    if (Game.stts == GS_Clear) {
+        SDL_Surface* clearSurface = TTF_RenderText_Solid(font_player_power, "GAME CLEAR", color_white);
+        if (clearSurface != NULL) {
+            SDL_Texture* clearTexture = SDL_CreateTextureFromSurface(Game.renderer, clearSurface);
+            if (clearTexture != NULL) {
+                SDL_Rect clearRect = { WINDOW_WIDTH / 2 - clearSurface->w / 2, WINDOW_HEIGHT / 2 - clearSurface->h / 2, clearSurface->w, clearSurface->h };
+                SDL_RenderCopy(Game.renderer, clearTexture, NULL, &clearRect);
+                SDL_DestroyTexture(clearTexture);
+            }
+            SDL_FreeSurface(clearSurface);
+        }
     }
     SDL_RenderPresent(Game.renderer);
-
 }
 
 void destroyWindow(){

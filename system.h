@@ -44,10 +44,12 @@ typedef enum {
 } CharaStts;
 
 //ボールタイプ
-#define BALLTYPE_NUM 2
+#define BALLTYPE_NUM 4
 typedef enum{
     OS_PLUS10       = 0,
-    OS_MINUS10      = 1
+    OS_MINUS10      = 1,
+    OS_TIME2        = 2,
+    OS_ZERO         = 3
 }BallType;
 
 /*キャラクター情報*/
@@ -78,7 +80,8 @@ typedef struct {
 typedef enum {
     GS_End     = 0, // 終了
     GS_Playing = 1, // 通常
-    GS_Ready   = 2  // 開始前
+    GS_Ready   = 2,  // 開始前
+    GS_Clear   = 3
 } GameStts;
 
 /* 
