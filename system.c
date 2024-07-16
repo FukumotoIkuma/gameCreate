@@ -137,6 +137,7 @@ void InitCharaInfo(){
             gameChara[i].max_speed = 300;
             gameChara[i].power = 0;
             Game.player = &(gameChara[i]);
+            gameChara[i].hp = 300;
             break;
         case CT_Boss:
             gameChara[i].stts = CS_Disable;
