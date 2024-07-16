@@ -225,6 +225,7 @@ void collisionBall(CharaInfo* player , CharaInfo* ball){
         break;
     case OS_FIREBALL:
         player->hp -= ball->power;
+        if (player->hp <= 0&& Game.stts == GS_Playing) Game.stts = GS_End;
         printf("player hp is %d\n",player->hp);
     default:
         break;
