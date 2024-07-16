@@ -3,6 +3,11 @@
 // 変数
 static SDL_Event event;
 
+void bossFireBall(){
+    printf("boss fire ball\n");
+    
+}
+
 /*
 キャラ情報の更新
 移動や状態に依存した処理など
@@ -39,6 +44,7 @@ void updateChara() {
                 break;
             }
             case CT_Boss: {
+                
                 Uint32 currentTime;
                 switch (gameChara[i].stts) {
                     case CS_Disable:
@@ -56,6 +62,12 @@ void updateChara() {
                         }
                         break;
                     case CS_Normal:
+                        if (gameChara[i].action_frame_countter %120 ==0){
+                            //このリセットタイミングは複数攻撃の周期の最小公倍数にすれば安全にリセットできる。
+                            gameChara[i].action_frame_countter = 0;
+                            bossFireBall();
+                        }
+                        gameChara[i].action_frame_countter ++;
                         if (gameChara[i].hp <= 0) {
                             gameChara[i].stts = CS_DisAppeare;
                             Game.stts = GS_Clear;

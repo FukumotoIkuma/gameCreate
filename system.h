@@ -63,6 +63,7 @@ typedef struct CharaInfo_t {
     int power;              // パワー（プレイヤー、オブジェクト）
     int max_speed;          //最大速度(プレイヤー)
     int hp;                 // HP（boss）
+    int action_frame_countter;//この値が任意の値で割り切れたタイミングで行動する。定期的にリセットしないとバグの元になる
     union {
         BallType bType;//オブジェクト用のタイプ設定
     };
